@@ -7,45 +7,56 @@ from bot import actions
 
 def game_login() -> gurun.Node:
     p = gurun.NodeSequence(name="BombCryptoLogin")
+
     p.add_node(
-        actions.detection_with_natural_click("connect-wallet-button.png", threshold=0.5)
-    )
-    p.add_node(
-        gurun.utils.Wait(
-            actions.detection_with_natural_click("metamask-sign-button.png"), timeout=60
+        gurun.BranchNode(
+            gurun.utils.While(
+                trigger=detection.TemplateDetectionFrom(
+                    actions.screenshot(),
+                    target=actions.resource_path("game-login-title.png"),
+                    name=f"game-login-detection",
+                ),
+                action=gurun.NodeSequence(
+                    [
+                        actions.detection_with_natural_click(
+                            "connect-wallet-button.png", threshold=0.5
+                        ),
+                        gurun.utils.Wait(
+                            actions.detection_with_natural_click(
+                                "metamask-sign-button.png"
+                            ),
+                            timeout=60,
+                        ),
+                        gurun.utils.Sleep(1),
+                    ]
+                ),
+                timeout=60,
+            ),
+            negative=io.HotKey("f5"),
         )
     )
-    p.add_node(gurun.utils.Sleep(1))
+
     return p
 
 
 def treasure_hunt() -> gurun.Node:
-    return gurun.BranchNode(
-        actions.detection_with_natural_click("treasure-hunt-button.png"),
-        positive=gurun.utils.Sleep(2),
+    return actions.wait_for_successful_action(
+        "treasure-hunt-button.png", name="TreasureHunt"
     )
 
 
 def error_message() -> gurun.Node:
-    p = gurun.NodeSequence(name="ErrorMessage")
-    p.add_node(
-        detection.TemplateDetectionFrom(
-            actions.screenshot(),
-            target=actions.resource_path("error-title.png"),
-            name="ErrorTitle",
-        )
+    return actions.wait_for_successful_action(
+        target="ok.png", wait_target="error-title.png", name="ErrorMessage"
     )
-    p.add_node(gurun.NullNode())
-    p.add_node(actions.detection_with_natural_click("ok-button.png"))
-    return p
 
 
 def new_map() -> gurun.Node:
     return actions.detection_with_natural_click("new-map.png")
 
 
-def heroes_to_work():
-    p = gurun.NodeSequence(name="SendAllHeroesToWork")
+def heroes_to_work() -> gurun.Node:
+    p = gurun.NodeSequence(name="HeroesToWork")
 
     p.add_node(actions.go_to_heroes_menu(), name="GoToHeroesMenu")
 
@@ -90,8 +101,15 @@ def heroes_to_work():
     return gurun.utils.RandomPeriodic(p, min_interval=500, max_interval=600)
 
 
-def refresh_treasure_hunt():
-    p = gurun.NodeSequence(name="RefreshArena")
-    p.add_node(actions.detection_with_natural_click("back-to-menu-button.png"))
-    p.add_node(gurun.utils.Wait(treasure_hunt(), timeout=15))
+def refresh_treasure_hunt() -> gurun.Node:
+    p = gurun.NodeSequence(name="RefreshTreasureHunt")
+    p.add_node(actions.go_back_to_main_menu())
+    p.add_node(treasure_hunt())
     return gurun.utils.RandomPeriodic(p, min_interval=250, max_interval=350)
+
+
+def unknown() -> gurun.Node:
+    p = gurun.NodeSequence(name="Unknown")
+    p.add_node(actions.close_window())
+    p.add_node(actions.ok_button())
+    return p
