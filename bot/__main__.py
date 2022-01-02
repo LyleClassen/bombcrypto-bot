@@ -1,16 +1,17 @@
 from gurun.runner import Runner
 
-from bot import pipelines
+from bot import scenes
 
 if __name__ == "__main__":
     runner = Runner(
         [
-            pipelines.action_game_login(),
-            pipelines.action_heroes_to_work(),
-            pipelines.action_treasure_hunt(),
-            pipelines.action_error_message(),
-            pipelines.action_new_map(),
-            pipelines.action_refresh_treasure_hunt(),
-        ]
+            scenes.game_login(),
+            scenes.error_message(),
+            scenes.new_map(),
+            scenes.heroes_to_work(),
+            scenes.treasure_hunt(),
+            scenes.refresh_treasure_hunt(),
+        ],
+        interval=1,
     )
     runner()
