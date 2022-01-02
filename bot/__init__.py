@@ -1,1 +1,1 @@
-settings = {"RESOURCES_DIR": "resources", "WORKSPACES": [1, 2], "OS": "linux"}
+settings = {"RESOURCES_DIR": "resources", "WORKSPACES": [0, 1], "OS": "linux"}
