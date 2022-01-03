@@ -1,1 +1,4 @@
-settings = {"RESOURCES_DIR": "resources", "WORKSPACES": [0, 1], "OS": "linux"}
+import yaml
+
+with open("settings.yaml", "r") as stream:
+    settings = yaml.safe_load(stream)

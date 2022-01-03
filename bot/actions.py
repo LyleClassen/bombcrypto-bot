@@ -16,7 +16,7 @@ def resource_path(filename: str) -> str:
 
 
 def detection_with_natural_click(
-    target: str, offset: gurun.Node = None, name: str = None, **kwargs
+    target: str, offset: gurun.Node = None, name: str = None, rect_to_point_node: transformation.Transformation = transformation.NaturalRectToPoint(), **kwargs
 ) -> gurun.Node:
     p = gurun.NodeSequence(name=name)
     p.add_node(
@@ -24,10 +24,13 @@ def detection_with_natural_click(
             screenshot(), target=resource_path(target), **kwargs
         )
     )
-    p.add_node(transformation.NaturalRectToPoint())
+    p.add_node(rect_to_point_node)
 
     if offset:
-        p.add_node(offset)
+        if isinstance(offset, gurun.Node):
+            p.add_node(offset)
+        else:
+            p.add_node(gurun.cv.transformation.Offset(*offset))
 
     p.add_node(io.MultipleNaturalClicks(clicks=2))
     return p
@@ -80,5 +83,16 @@ def go_to_heroes_menu() -> gurun.Node:
         name="BackToMenu",
     )
     p.add_node(detection_with_natural_click("heroes-button.png"))
+
+    return p
+
+
+def scroll_heroes_menu() -> gurun.Node:
+    p = gurun.NodeSequence(name="ScrollHeroesMenu")
+    p.add_node(transformation.RectToPoint())
+    p.add_node(transformation.Offset(yOffset=350, ravel=True))
+    p.add_node(io.MoveTo(duration=1))
+    p.add_node(io.DragRel(yOffset=-250, duration=2))
+    p.add_node(gurun.utils.Sleep(2))
 
     return p

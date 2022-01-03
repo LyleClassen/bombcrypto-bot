@@ -1,8 +1,9 @@
 import gurun
 from gurun.cv import detection, transformation
+from gurun.cv import utils as cv_utils
 from gurun.gui import io
 
-from bot import actions
+from bot import actions, settings
 
 
 def game_login() -> gurun.Node:
@@ -63,7 +64,7 @@ def heroes_to_work() -> gurun.Node:
     p.add_node(
         gurun.utils.Wait(
             actions.detection_with_natural_click(
-                "work-button-disabled.png", threshold=0.9
+                "green-bar.png", threshold=0.9, offset=(150, 0), rect_to_point_node=transformation.RectToPoint()
             ),
             timeout=15,
         ),
@@ -76,36 +77,31 @@ def heroes_to_work() -> gurun.Node:
             detection.TemplateDetectionFrom(
                 actions.screenshot(),
                 target=actions.resource_path("character-menu-title.png"),
-                name="WorkButtonDisabled",
-                single_match=True,
             )
         )
-        p.add_node(transformation.RectToPoint())
-        p.add_node(transformation.Offset(yOffset=350, ravel=True))
-        p.add_node(io.MoveTo(duration=1))
-        p.add_node(io.DragRel(yOffset=-250, duration=2))
-        p.add_node(gurun.utils.Sleep(2))
+        p.add_node(cv_utils.ForEachDetection(actions.scroll_heroes_menu()))
+
         p.add_node(
-            gurun.utils.Wait(
+            gurun.BranchNode(gurun.utils.Wait(
                 actions.detection_with_natural_click(
-                    "work-button-disabled.png", threshold=0.9
+                    "green-bar.png", threshold=0.9, offset=(150, 0), rect_to_point_node=transformation.RectToPoint()
                 ),
-                timeout=15,
-            ),
+                timeout=5,
+            )),
             name=f"EnableWorkers-{i + 1}",
         )
 
     p.add_node(gurun.utils.Print("All heroes are ready to work"))
     p.add_node(actions.close_window())
 
-    return gurun.utils.RandomPeriodic(p, min_interval=500, max_interval=600)
+    return gurun.utils.RandomPeriodic(p, min_interval=settings["HEROES"]["MIN"], max_interval=settings["HEROES"]["MAX"])
 
 
 def refresh_treasure_hunt() -> gurun.Node:
     p = gurun.NodeSequence(name="RefreshTreasureHunt")
     p.add_node(actions.go_back_to_main_menu())
     p.add_node(treasure_hunt())
-    return gurun.utils.RandomPeriodic(p, min_interval=250, max_interval=350)
+    return gurun.utils.RandomPeriodic(p, min_interval=settings["REFRESH"]["MIN"], max_interval=settings["REFRESH"]["MIN"])
 
 
 def unknown() -> gurun.Node:

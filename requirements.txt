@@ -1,1 +1,2 @@
 gurun[full]
+pyyaml

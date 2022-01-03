@@ -1,6 +1,4 @@
-import subprocess
-from typing import Any
-
+import os
 import gurun
 from gurun.runner import Runner
 
@@ -21,24 +19,13 @@ def main_scenes() -> gurun.Node:
     )
 
 
-class Workspace(gurun.Node):
-    def __init__(self, workspace: str, os: str):
-        self.workspace = workspace
-        self.os = os
-
-        super().__init__(name=f"Workspace-{workspace}")
-
-    def __call__(self, *args: Any, **kwargs: Any) -> Any:
-        if self.os == "linux":
-            subprocess.run(["wmctrl", "-s", self.workspace])
-
-
 if __name__ == "__main__":
+    os.environ["GURUN_VERBOSE"] = str(settings["VERBOSE"])
     runner = Runner(
         [
-            gurun.NodeSequence([Workspace(w, settings["OS"]), main_scenes()])
+            gurun.NodeSequence([gurun.gui.os.Workspace(w, settings["OS"]), main_scenes()])
             for w in settings["WORKSPACES"]
-        ],
+        ] if settings["MULTI_ACCOUNT"] else main_scenes(),
         interval=1,
     )
-    runner()
+    runner.run()
