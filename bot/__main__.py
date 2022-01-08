@@ -25,7 +25,7 @@ if __name__ == "__main__":
         [
             gurun.NodeSequence([gurun.gui.os.Workspace(w, settings["OS"]), main_scenes()])
             for w in settings["WORKSPACES"]
-        ] if settings["MULTI_ACCOUNT"] else main_scenes(),
+        ] if settings["MULTI_WORKSPACES"] else main_scenes(),
         interval=1,
     )
     runner.run()

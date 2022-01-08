@@ -61,18 +61,25 @@ def heroes_to_work() -> gurun.Node:
 
     p.add_node(actions.go_to_heroes_menu(), name="GoToHeroesMenu")
 
+    p.add_node(gurun.utils.Sleep(1))
+
     p.add_node(
-        gurun.utils.Wait(
-            actions.detection_with_natural_click(
-                "green-bar.png", threshold=0.9, offset=(150, 0), rect_to_point_node=transformation.RectToPoint()
+            gurun.BranchNode(actions.detection_with_natural_click(
+                    "full-stamina.png", threshold=0.9, offset=(100, 0), rect_to_point_node=transformation.RectToPoint()
+                )), 
+            name=f"FullStamina-0",
+        )
+    p.add_node(
+            gurun.BranchNode(actions.detection_with_natural_click(
+                    "green-bar.png", threshold=0.9, offset=(150, 0), rect_to_point_node=transformation.RectToPoint()
+                )
             ),
-            timeout=15,
-        ),
-        name="EnableWorkers-0",
-    )
+            name=f"EnableWorkers-0",
+        )
+
 
     for i in range(3):
-        p.add_node(gurun.utils.Sleep(1))
+        p.add_node(gurun.utils.Sleep(2))
         p.add_node(
             detection.TemplateDetectionFrom(
                 actions.screenshot(),
@@ -82,13 +89,18 @@ def heroes_to_work() -> gurun.Node:
         p.add_node(cv_utils.ForEachDetection(actions.scroll_heroes_menu()))
 
         p.add_node(
-            gurun.BranchNode(gurun.utils.Wait(
-                actions.detection_with_natural_click(
+            gurun.BranchNode(actions.detection_with_natural_click(
                     "green-bar.png", threshold=0.9, offset=(150, 0), rect_to_point_node=transformation.RectToPoint()
-                ),
-                timeout=5,
-            )),
+                )
+            ),
             name=f"EnableWorkers-{i + 1}",
+        )
+
+        p.add_node(
+            gurun.BranchNode(actions.detection_with_natural_click(
+                    "full-stamina.png", threshold=0.9, offset=(100, 0), rect_to_point_node=transformation.RectToPoint()
+                )),
+            name=f"FullStamina-{i + 1}",
         )
 
     p.add_node(gurun.utils.Print("All heroes are ready to work"))
@@ -101,7 +113,7 @@ def refresh_treasure_hunt() -> gurun.Node:
     p = gurun.NodeSequence(name="RefreshTreasureHunt")
     p.add_node(actions.go_back_to_main_menu())
     p.add_node(treasure_hunt())
-    return gurun.utils.RandomPeriodic(p, min_interval=settings["REFRESH"]["MIN"], max_interval=settings["REFRESH"]["MIN"])
+    return gurun.utils.RandomPeriodic(p, min_interval=settings["REFRESH"]["MIN"], max_interval=settings["REFRESH"]["MAX"])
 
 
 def unknown() -> gurun.Node:
