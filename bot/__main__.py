@@ -2,6 +2,9 @@ import os
 import gurun
 from gurun.runner import Runner
 
+from gurun.gui import os as gui_os
+
+
 from bot import scenes, settings
 
 
@@ -23,7 +26,7 @@ if __name__ == "__main__":
     os.environ["GURUN_VERBOSE"] = str(settings["VERBOSE"])
     runner = Runner(
         [
-            gurun.NodeSequence([gurun.gui.os.Workspace(w, settings["OS"]), main_scenes()])
+            gurun.NodeSequence([gui_os.Workspace(str(w), settings["OS"]), main_scenes()])
             for w in settings["WORKSPACES"]
         ] if settings["MULTI_WORKSPACES"] else main_scenes(),
         interval=1,
