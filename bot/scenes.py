@@ -1,9 +1,8 @@
 import gurun
-from gurun.cv import detection, transformation
-from gurun.cv import utils as cv_utils
+from gurun.cv import detection
 from gurun.gui import io
 
-from bot import actions, settings
+from bot import actions
 
 
 def game_login() -> gurun.Node:
@@ -46,74 +45,39 @@ def treasure_hunt() -> gurun.Node:
     )
 
 
-def error_message() -> gurun.Node:
-    return actions.wait_for_successful_action(
-        target="ok.png", wait_target="error-title.png", name="ErrorMessage"
-    )
-
-
 def new_map() -> gurun.Node:
     return actions.detection_with_natural_click("new-map.png")
 
 
-def heroes_to_work() -> gurun.Node:
+def heroes_to_work(
+    strategy: str, min_interval: float, max_interval: float
+) -> gurun.Node:
     p = gurun.NodeSequence(name="HeroesToWork")
 
     p.add_node(actions.go_to_heroes_menu(), name="GoToHeroesMenu")
 
     p.add_node(gurun.utils.Sleep(1))
 
-    p.add_node(
-            gurun.BranchNode(actions.detection_with_natural_click(
-                    "full-stamina.png", threshold=0.9, offset=(100, 0), rect_to_point_node=transformation.RectToPoint()
-                )), 
-            name=f"FullStamina-0",
-        )
-    p.add_node(
-            gurun.BranchNode(actions.detection_with_natural_click(
-                    "green-bar.png", threshold=0.9, offset=(150, 0), rect_to_point_node=transformation.RectToPoint()
-                )
-            ),
-            name=f"EnableWorkers-0",
-        )
-
-
-    for i in range(3):
-        p.add_node(gurun.utils.Sleep(2))
-        p.add_node(
-            detection.TemplateDetectionFrom(
-                actions.screenshot(),
-                target=actions.resource_path("character-menu-title.png"),
-            )
-        )
-        p.add_node(cv_utils.ForEachDetection(actions.scroll_heroes_menu()))
-
-        p.add_node(
-            gurun.BranchNode(actions.detection_with_natural_click(
-                    "green-bar.png", threshold=0.9, offset=(150, 0), rect_to_point_node=transformation.RectToPoint()
-                )
-            ),
-            name=f"EnableWorkers-{i + 1}",
-        )
-
-        p.add_node(
-            gurun.BranchNode(actions.detection_with_natural_click(
-                    "full-stamina.png", threshold=0.9, offset=(100, 0), rect_to_point_node=transformation.RectToPoint()
-                )),
-            name=f"FullStamina-{i + 1}",
-        )
+    if strategy == "greens":
+        p.add_node(actions.send_green_heroes())
+    else:
+        p.add_node(actions.send_all_heroes())
 
     p.add_node(gurun.utils.Print("All heroes are ready to work"))
     p.add_node(actions.close_window())
 
-    return gurun.utils.RandomPeriodic(p, min_interval=settings["HEROES"]["MIN"], max_interval=settings["HEROES"]["MAX"])
+    return gurun.utils.RandomPeriodic(
+        p, min_interval=min_interval, max_interval=max_interval
+    )
 
 
-def refresh_treasure_hunt() -> gurun.Node:
+def refresh_treasure_hunt(min_interval: float, max_interval: float) -> gurun.Node:
     p = gurun.NodeSequence(name="RefreshTreasureHunt")
     p.add_node(actions.go_back_to_main_menu())
     p.add_node(treasure_hunt())
-    return gurun.utils.RandomPeriodic(p, min_interval=settings["REFRESH"]["MIN"], max_interval=settings["REFRESH"]["MAX"])
+    return gurun.utils.RandomPeriodic(
+        p, min_interval=min_interval, max_interval=max_interval
+    )
 
 
 def unknown() -> gurun.Node:

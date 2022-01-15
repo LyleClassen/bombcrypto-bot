@@ -1,22 +1,21 @@
-import os
-
 import gurun
 from gurun.cv import detection, transformation
+from gurun.cv import utils as cv_utils
 from gurun.gui import io
 
-from bot import settings
+from bot import resource_path
 
 
 def screenshot() -> gurun.Node:
     return gurun.gui.screenshot.ScreenshotMMS()
 
 
-def resource_path(filename: str) -> str:
-    return os.path.join(settings["RESOURCES_DIR"], filename)
-
-
 def detection_with_natural_click(
-    target: str, offset: gurun.Node = None, name: str = None, rect_to_point_node: transformation.Transformation = transformation.NaturalRectToPoint(), **kwargs
+    target: str,
+    offset: gurun.Node = None,
+    name: str = None,
+    rect_to_point_node: transformation.Transformation = transformation.NaturalRectToPoint(),
+    **kwargs,
 ) -> gurun.Node:
     p = gurun.NodeSequence(name=name)
     p.add_node(
@@ -94,5 +93,84 @@ def scroll_heroes_menu() -> gurun.Node:
     p.add_node(io.MoveTo(duration=1))
     p.add_node(io.DragRel(yOffset=-250, duration=2))
     p.add_node(gurun.utils.Sleep(2))
+
+    return p
+
+
+def send_green_heroes() -> gurun.Node:
+    p = gurun.NodeSequence(name="SendGreenHeroesToWork")
+
+    p.add_node(
+        gurun.BranchNode(
+            detection_with_natural_click(
+                "full-stamina.png",
+                threshold=0.9,
+                offset=(100, 0),
+                rect_to_point_node=transformation.RectToPoint(),
+            )
+        ),
+        name=f"FullStamina-0",
+    )
+    p.add_node(
+        gurun.BranchNode(
+            detection_with_natural_click(
+                "green-bar.png",
+                threshold=0.9,
+                offset=(150, 0),
+                rect_to_point_node=transformation.RectToPoint(),
+            )
+        ),
+        name=f"EnableWorkers-0",
+    )
+
+    for i in range(3):
+        p.add_node(gurun.utils.Sleep(2))
+        p.add_node(
+            detection.TemplateDetectionFrom(
+                screenshot(),
+                target=resource_path("character-menu-title.png"),
+            )
+        )
+        p.add_node(cv_utils.ForEachDetection(scroll_heroes_menu()))
+
+        p.add_node(
+            gurun.BranchNode(
+                detection_with_natural_click(
+                    "green-bar.png",
+                    threshold=0.9,
+                    offset=(150, 0),
+                    rect_to_point_node=transformation.RectToPoint(),
+                )
+            ),
+            name=f"EnableWorkers-{i + 1}",
+        )
+
+        p.add_node(
+            gurun.BranchNode(
+                detection_with_natural_click(
+                    "full-stamina.png",
+                    threshold=0.9,
+                    offset=(100, 0),
+                    rect_to_point_node=transformation.RectToPoint(),
+                )
+            ),
+            name=f"FullStamina-{i + 1}",
+        )
+
+    return p
+
+
+def send_all_heroes() -> gurun.Node:
+    p = gurun.NodeSequence(name="SendAllHeroesToWork")
+
+    p.add_node(
+        gurun.BranchNode(
+            detection_with_natural_click(
+                "all-button.png",
+                threshold=0.9,
+                rect_to_point_node=transformation.RectToPoint(),
+            )
+        )
+    )
 
     return p
