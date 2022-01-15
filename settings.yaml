@@ -1,11 +1,11 @@
 RESOURCES_DIR: resources
 MULTI_WORKSPACES: False # True
 WORKSPACES: [0, 1]
-OS: windows
+OS: windows # linux
 VERBOSE: 1
 REFRESH:
   MIN: 300
   MAX: 600
 HEROES:
-  MIN: 1800
-  MAX: 2000
+  MIN: 1500
+  MAX: 1800
