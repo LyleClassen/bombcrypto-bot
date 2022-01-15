@@ -2,7 +2,7 @@ import gurun
 from gurun.cv import detection
 from gurun.gui import io
 
-from bot import actions
+from bot import actions, image_reader
 
 
 def game_login() -> gurun.Node:
@@ -13,7 +13,7 @@ def game_login() -> gurun.Node:
             gurun.utils.While(
                 trigger=detection.TemplateDetectionFrom(
                     actions.screenshot(),
-                    target=actions.resource_path("game-login-title.png"),
+                    target=image_reader.read("game-login-title.png"),
                     name=f"game-login-detection",
                 ),
                 action=gurun.NodeSequence(

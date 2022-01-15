@@ -1,4 +1,5 @@
 RESOURCES_DIR: resources
+ZOOM: 1.0
 MULTI_WORKSPACES: False # True
 WORKSPACES: [0, 1]
 OS: windows # linux

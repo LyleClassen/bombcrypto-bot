@@ -3,7 +3,7 @@ from gurun.cv import detection, transformation
 from gurun.cv import utils as cv_utils
 from gurun.gui import io
 
-from bot import resource_path
+from bot import image_reader
 
 
 def screenshot() -> gurun.Node:
@@ -20,7 +20,7 @@ def detection_with_natural_click(
     p = gurun.NodeSequence(name=name)
     p.add_node(
         detection.TemplateDetectionFrom(
-            screenshot(), target=resource_path(target), **kwargs
+            screenshot(), target=image_reader.read(target), **kwargs
         )
     )
     p.add_node(rect_to_point_node)
@@ -45,7 +45,7 @@ def wait_for_successful_action(
         gurun.utils.While(
             trigger=detection.TemplateDetectionFrom(
                 screenshot(),
-                target=resource_path(wait_target),
+                target=image_reader.read(wait_target),
                 name=f"{name}-detection",
             ),
             action=detection_with_natural_click(target),
@@ -128,7 +128,7 @@ def send_green_heroes() -> gurun.Node:
         p.add_node(
             detection.TemplateDetectionFrom(
                 screenshot(),
-                target=resource_path("character-menu-title.png"),
+                target=image_reader.read("character-menu-title.png"),
             )
         )
         p.add_node(cv_utils.ForEachDetection(scroll_heroes_menu()))
