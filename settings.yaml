@@ -7,6 +7,6 @@ REFRESH:
   MIN: 300
   MAX: 600
 HEROES:
-  STRATEGY: all
+  STRATEGY: all # greens
   MIN: 1500
   MAX: 1800
