@@ -15,7 +15,4 @@ class ImageReader(object):
         return os.path.join(self.resource_dir, filename)
 
     def read(self, filename: str) -> np.ndarray:
-        if self.zoom != 1.0:
-            return self.resize(cv2.imread(self.resource_path(filename)))
-
-        return cv2.imread(self.resource_path(filename))
+        return self.resize(cv2.imread(self.resource_path(filename)))

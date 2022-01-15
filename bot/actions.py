@@ -167,7 +167,7 @@ def send_all_heroes() -> gurun.Node:
         gurun.BranchNode(
             detection_with_natural_click(
                 "all-button.png",
-                threshold=0.9,
+                threshold=0.5,
                 rect_to_point_node=transformation.RectToPoint(),
             )
         )
