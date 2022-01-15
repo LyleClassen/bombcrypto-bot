@@ -2,7 +2,7 @@
 
 A bot to automate the bombcrypto game.
 
-This bot supports multiple accounts open on the same screen, and use of multiple worspaces.
+This bot supports multiple accounts open on the same screen, and using multiple worspaces.
 
 ![Screenshot](https://raw.githubusercontent.com/gabrielguarisa/bombcrypto-bot/master/resources/screenshot.png)
 
