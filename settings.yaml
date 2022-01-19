@@ -1,12 +1,12 @@
 RESOURCES_DIR: resources
-ZOOM: 1.0
+ZOOM: 1.0 # 0.5
 MULTI_WORKSPACES: False # True
 WORKSPACES: [0, 1]
 OS: windows # linux
 VERBOSE: 1
 REFRESH:
-  MIN: 300
-  MAX: 600
+  MIN: 60
+  MAX: 180
 HEROES:
   STRATEGY: all # greens
   MIN: 1500

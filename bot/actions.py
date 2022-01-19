@@ -15,12 +15,13 @@ def detection_with_natural_click(
     offset: gurun.Node = None,
     name: str = None,
     rect_to_point_node: transformation.Transformation = transformation.NaturalRectToPoint(),
+    apply_zoom: bool = True,
     **kwargs,
 ) -> gurun.Node:
     p = gurun.NodeSequence(name=name)
     p.add_node(
         detection.TemplateDetectionFrom(
-            screenshot(), target=image_reader.read(target), **kwargs
+            screenshot(), target=image_reader.read(target, apply_zoom), **kwargs
         )
     )
     p.add_node(rect_to_point_node)

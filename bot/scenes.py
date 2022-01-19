@@ -23,7 +23,7 @@ def game_login() -> gurun.Node:
                         ),
                         gurun.utils.Wait(
                             actions.detection_with_natural_click(
-                                "metamask-sign-button.png"
+                                "metamask-sign-button.png", apply_zoom=False
                             ),
                             timeout=60,
                         ),
