@@ -21,6 +21,7 @@ def game_login() -> gurun.Node:
                         actions.detection_with_natural_click(
                             "connect-wallet-button.png", threshold=0.5
                         ),
+                        gurun.utils.Sleep(10),
                         gurun.utils.Wait(
                             actions.detection_with_natural_click(
                                 "metamask-sign-button.png", apply_zoom=False
