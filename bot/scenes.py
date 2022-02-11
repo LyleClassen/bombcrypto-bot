@@ -42,7 +42,7 @@ def game_login() -> gurun.Node:
 
 def treasure_hunt() -> gurun.Node:
     return actions.wait_for_successful_action(
-        "treasure-hunt-button.png", name="TreasureHunt"
+        "treasure-hunt-button.png", name="TreasureHunt", timeout = 100
     )
 
 
