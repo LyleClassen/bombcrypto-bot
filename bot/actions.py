@@ -54,7 +54,8 @@ def wait_for_successful_action(
         ),
         name=f"{name}-while",
     )
-
+    print("P is: ")
+    print(p)
     return p
 
 
